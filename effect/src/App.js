@@ -1,46 +1,47 @@
-import logo from './logo.svg';
 import './App.css';
-import { useState, useEffect } from 'react';
+import TaskCreate from './components/TaskCreate';
+import TaskList from './components/TaskList';
+import { useState } from 'react';
 
 function App() {
-  const [can, setCan] = useState(0);
-  const [tuba, setTuba] = useState(0);
-  useEffect(() => {
-    console.log('İlk kez render edildiğinde çalışır daha da çalışmaz');
-  }, []);
+  const [tasks, setTasks] = useState([]);
+  const createTask = (title, taskDesc) => {
+    const createdTasks = [
+      ...tasks,
+      {
+        id: Math.round(Math.random() * 999999),
+        title,
+        taskDesc,
+      },
+    ];
+    setTasks(createdTasks);
+  };
 
-  useEffect(() => {
-    console.log('Her zaman çalışır');
-  });
-
-  useEffect(() => {
-    console.log(
-      'İlk kez render edildiğinde çalışır Can değerinde bir değişiklik olduğunda çalışır'
-    );
-  }, [can]);
-
-  useEffect(() => {
-    console.log(
-      'İlk kez render edildiğinde çalışır Tuba değerinde bir değişiklik olduğunda çalışır'
-    );
-  }, [tuba]);
-
-  useEffect(() => {
-    console.log(
-      'İlk kez render edildiğinde çalışır Can veya Tuba değerinde bir değişiklik olduğunda çalışır'
-    );
-  }, [can, tuba]);
+  const deleteTaskById = (id) => {
+    const afterDeletingTasks = tasks.filter((task) => {
+      return task.id !== id;
+    });
+    setTasks(afterDeletingTasks);
+  };
+  const editTaskById = (id, updatedTitle, updatedTaskDesc) => {
+    const updatedTasks = tasks.map((task) => {
+      if (task.id === id) {
+        return { id, title: updatedTitle, taskDesc: updatedTaskDesc };
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
+  };
 
   return (
     <div className="App">
-      <div className="firstDiv">
-        <button onClick={() => setCan(can + 1)}>Can ++</button>
-        <div>Can: {can}</div>
-      </div>
-      <div>
-        <button onClick={() => setTuba(tuba + 1)}>Tuba ++</button>
-        <div>Tuba: {tuba}</div>
-      </div>
+      <TaskCreate onCreate={createTask} />
+      <h1>Görevler</h1>
+      <TaskList
+        tasks={tasks}
+        onDelete={deleteTaskById}
+        onUpdate={editTaskById}
+      />
     </div>
   );
 }
